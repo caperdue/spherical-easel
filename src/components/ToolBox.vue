@@ -45,13 +45,26 @@
           </template>
           <span>{{ $t("main.ConstructionsTabToolTip") }}</span>
         </v-tooltip>
+        <v-tooltip bottom
+          :open-delay="toolTipOpenDelay"
+          :close-delay="toolTipCloseDelay">
+          <template v-slot:activator="{ on }">
+            <v-tab class="mt-3"
+              v-on="on">
+              <v-icon left>$vuetify.icons.value.constructionsTab</v-icon>
+            </v-tab>
+          </template>
+          <span>{{ $t("main.ConstructionsTabToolTip") }}</span>
+        </v-tooltip>
 
         <v-tab-item>
           <ToolGroups id="toolGroups"></ToolGroups>
         </v-tab-item>
         <v-tab-item>
-          <ObjectTree id="objtree">
-          </ObjectTree>
+          <ObjectTree id="objtree"></ObjectTree>
+        </v-tab-item>
+        <v-tab-item>
+          <ConstructionLoader id="loader"></ConstructionLoader>
         </v-tab-item>
         <v-tab-item>
           <ConstructionLoader id="loader"></ConstructionLoader>
@@ -67,6 +80,8 @@
       <v-icon>$vuetify.icons.value.toolsTab</v-icon>
       <v-spacer />
       <v-icon>$vuetify.icons.value.objectsTab</v-icon>
+      <v-spacer />
+      <v-icon>$vuetify.icons.value.constructionsTab</v-icon>
       <v-spacer />
       <v-icon>$vuetify.icons.value.constructionsTab</v-icon>
       <v-spacer />
@@ -159,7 +174,8 @@ export default class Toolbox extends Vue {
 
 #objtree,
 #toolGroups,
-#loader {
+#loader,
+#treeview {
   /* It is important to set the height otherwise the "overflow' option in <ObjectTree> won't work correctly */
   height: calc(100vh - 200px);
   max-width: 360px;

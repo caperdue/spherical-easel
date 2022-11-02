@@ -16,6 +16,23 @@
       v-on:share-requested="doShareConstruction"
       v-on:delete-requested="shouldDeleteConstruction" />
 
+    <div class="text-h6"
+      v-if="firebaseUid.length > 0">
+      {{$t(`constructions.privateConstructions`)}}</div>
+    <ConstructionTreeView id="privateList"
+      :items="privateConstructions"
+      :privacyCheck="true"
+      v-on:load-requested="shouldLoadConstruction"
+      v-on:delete-requested="shouldDeleteConstruction" />
+    <div class="text-h6"></div>
+    <ConstructionTreeView id="publicList"
+      :items="publicConstructions"
+      :privacy-check="false"
+      :allow-sharing="true"
+      v-on:load-requested="shouldLoadConstruction"
+      v-on:share-requested="doShareConstruction"
+      v-on:delete-requested="shouldDeleteConstruction" />
+
     <Dialog ref="constructionShareDialog"
       id="_test_constructionShareDialog"
       class="dialog"
@@ -80,6 +97,7 @@ import { SENodule } from "@/models/SENodule";
 import { FirebaseAuth } from "@firebase/auth-types";
 import Dialog, { DialogAction } from "@/components/Dialog.vue";
 import ConstructionList from "@/components/ConstructionList.vue";
+import ConstructionTreeView from "@/components/ConstructionTreeView.vue";
 import { Matrix4 } from "three";
 import { useAccountStore } from "@/stores/account";
 import axios, { AxiosResponse } from "axios";
@@ -87,7 +105,7 @@ import { mapActions, mapState } from "pinia";
 import { useSEStore } from "@/stores/se";
 
 @Component({
-  components: { Dialog, ConstructionList },
+  components: { Dialog, ConstructionList, ConstructionTreeView },
   computed: {
     ...mapState(useAccountStore, ["includedTools"]),
     ...mapState(useSEStore, ["hasUnsavedNodules"])
