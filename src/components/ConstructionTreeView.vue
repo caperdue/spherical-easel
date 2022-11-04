@@ -4,7 +4,8 @@
     <!-- the class "nodata" is used for testing. Do not remove it -->
     <span v-if="items.length === 0"
       class="_test_nodata">No data</span>
-    <v-list-group v-if="items.length > 0" :value="true"
+    <v-list-group v-if="items.length > 0"
+      :value="true"
       class="text-h6">
       <template v-slot:activator>
         <span v-if="!privacyCheck">
@@ -101,13 +102,27 @@ import { useSEStore } from "@/stores/se";
   computed: {
     ...mapState(useSEStore, ["svgCanvas"]),
     ...mapWritableState(useSEStore, ["inverseTotalRotationMatrix"])
+    // filteredItems() {
+    //   return _.orderBy(
+    //     this.items.filter(item => {
+    //       if (!this.search) return this.items;
+    //       return (
+    //         item.title.toLowerCase().includes(this.search.toLowerCase()) ||
+    //         item.action.toLowerCase().includes(this.search.toLowerCase()) ||
+    //         item.headline.toLowerCase().includes(this.search.toLowerCase()) ||
+    //         item.subtitle.toLowerCase().includes(this.search.toLowerCase())
+    //       );
+    //     }),
+    //     "headline"
+    //   );
+    // }
   }
 })
 export default class extends Vue {
   @Prop()
   readonly items!: Array<SphericalConstruction>;
 
-  @Prop({ type: Boolean})
+  @Prop({ type: Boolean })
   readonly privacyCheck!: boolean;
 
   @Prop({ type: Boolean })

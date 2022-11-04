@@ -3,6 +3,12 @@
     <div class="text-h6"
       v-if="firebaseUid.length > 0">
       {{$t(`constructions.privateConstructions`)}}</div>
+    <!-- <div>
+      <v-text-field
+        v-model="search"
+        label="Search"
+      ></v-text-field>
+    </div> -->
     <!--- WARNING: the "id" attribs below are needed for testing -->
     <ConstructionList id="privateList"
       :items="privateConstructions"
@@ -145,6 +151,7 @@ export default class ConstructionLoader extends Vue {
   privateConstructions: Array<SphericalConstruction> = [];
   shareURL = "";
   selectedDocId = "";
+  search = "";
 
   $refs!: {
     constructionShareDialog: VueComponent & DialogAction;
