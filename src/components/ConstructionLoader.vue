@@ -21,19 +21,16 @@
       v-on:load-requested="shouldLoadConstruction"
       v-on:share-requested="doShareConstruction"
       v-on:delete-requested="shouldDeleteConstruction" />
-
     <div class="text-h6"
       v-if="firebaseUid.length > 0">
       {{$t(`constructions.privateConstructions`)}}</div>
     <ConstructionTreeView id="privateList"
       :items="privateConstructions"
-      :privacyCheck="true"
       v-on:load-requested="shouldLoadConstruction"
       v-on:delete-requested="shouldDeleteConstruction" />
-    <div class="text-h6"></div>
+    <div class="text-h6">{{$t(`constructions.publicConstructions`)}}</div>
     <ConstructionTreeView id="publicList"
       :items="publicConstructions"
-      :privacy-check="false"
       :allow-sharing="true"
       v-on:load-requested="shouldLoadConstruction"
       v-on:share-requested="doShareConstruction"
@@ -241,6 +238,7 @@ export default class ConstructionLoader extends Vue {
           author: doc.author,
           dateCreated: doc.dateCreated,
           description: doc.description,
+          name: doc.description,
           sphereRotationMatrix,
           previewData: svgData ?? "",
           tools: doc.tools ?? undefined

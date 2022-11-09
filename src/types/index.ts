@@ -553,6 +553,7 @@ export interface ConstructionInFirestore {
   dateCreated: string;
   script: string;
   description: string;
+  name: string;
   rotationMatrix?: string;
   preview?: string;
   // A list of enabled tool buttons associated with this construction
