@@ -10,7 +10,7 @@
       ></v-text-field>
     </div> -->
     <!--- WARNING: the "id" attribs below are needed for testing -->
-    <ConstructionList id="privateList"
+    <!-- <ConstructionList id="privateList"
       :items="privateConstructions"
       v-on:load-requested="shouldLoadConstruction"
       v-on:delete-requested="shouldDeleteConstruction" />
@@ -20,7 +20,7 @@
       :allow-sharing="true"
       v-on:load-requested="shouldLoadConstruction"
       v-on:share-requested="doShareConstruction"
-      v-on:delete-requested="shouldDeleteConstruction" />
+      v-on:delete-requested="shouldDeleteConstruction" /> -->
     <div class="text-h6"
       v-if="firebaseUid.length > 0">
       {{$t(`constructions.privateConstructions`)}}</div>
