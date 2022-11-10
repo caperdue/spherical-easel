@@ -183,7 +183,7 @@ export default class ConstructionLoader extends Vue {
 
   populateData(
     qs: QuerySnapshot,
-    targetArr: Array<SphericalConstruction>
+    targetArr: Array<any>
   ): void {
     console.debug(`Here in populateData in Construction Loader .vue`);
     targetArr.splice(0);

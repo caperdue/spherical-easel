@@ -1,6 +1,5 @@
 <template>
-  <div @mouseenter="onListEnter"
-      @mouseleave="onListLeave">
+  <div>
     <v-text-field
       v-model="search"
       label="Search construction"
@@ -9,8 +8,8 @@
     <v-treeview
       :items="items"
       :search="search"
-      :filter="filter"
-      :open.sync="open">
+      :open.sync="open"
+      activatable>
     </v-treeview>
   </div>
 </template>
