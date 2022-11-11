@@ -248,13 +248,14 @@ import { Vue, Component } from "vue-property-decorator";
 import MessageBox from "@/components/MessageBox.vue";
 // import ConstructionLoader from "@/components/ConstructionLoader.vue";
 import Dialog, { DialogAction } from "@/components/Dialog.vue";
-import { ConstructionInFirestore } from "./types";
+import { ConstructionInFirestore, PublicConstructionInFirestore } from "./types";
 import EventBus from "@/eventHandlers/EventBus";
 import { Error, FirebaseAuth, User } from "@firebase/auth-types";
 import {
   FirebaseFirestore,
   DocumentReference,
-  DocumentSnapshot
+  DocumentSnapshot,
+  DocumentData
 } from "@firebase/firestore-types";
 import { FirebaseStorage, UploadTaskSnapshot } from "@firebase/storage-types";
 import { Unsubscribe } from "@firebase/util";
@@ -683,9 +684,12 @@ export default class App extends Vue {
     // but loaded by a user working on a smaller screen (small zoomFactor)
 
     const rotationMat = this.inverseTotalRotationMatrix;
-    const collectionPath = this.publicConstruction
-      ? "constructions"
-      : `users/${this.uid}/constructions`;
+
+    // The collection where user constructions will be stored
+    const collectionPath = `users/${this.uid}/constructions`;
+
+    // The collection where public construction information is stored. If not sharing publicly, this should be null
+    const publicCollectionPath = this.publicConstruction ? "constructions" : null;
 
     // Make a duplicate of the SVG tree
     const svgElement = this.svgRoot.cloneNode(true) as SVGElement;
@@ -706,8 +710,9 @@ export default class App extends Vue {
 
     /* Create a pipeline of Firebase tasks
        Task 1: Upload construction to Firestore
-       Task 2: Upload the script to Firebase Storage (for large script)
-       Task 3: Upload the SVG preview to Firebase Storage (for large SVG)
+       Task 2: Upload public construction reference (if necessary) to Firestore
+       Task 3: Upload the script to Firebase Storage (for large script)
+       Task 4: Upload the SVG preview to Firebase Storage (for large SVG)
     */
     this.$appDB // Task #1
       .collection(collectionPath)
@@ -718,10 +723,20 @@ export default class App extends Vue {
         description: this.description,
         rotationMatrix: JSON.stringify(rotationMat.elements),
         tools: this.includedTools,
-        script: "" // Use an empty string (for type checking only)
+        script: "" , // Use an empty string (for type checking only),
+        importCount: 0
       } as ConstructionInFirestore)
       .then((constructionDoc: DocumentReference) => {
         /* Task #2 */
+        const publicConstructionPromise: Promise<DocumentReference<DocumentData> | string> =
+        publicCollectionPath ?
+          this.$appDB.collection(publicCollectionPath).add({
+            author: this.uid,
+            constructionDocId: constructionDoc.id
+          } as PublicConstructionInFirestore)
+        : Promise.resolve("Private construction only")
+
+        /* Task #3 */
         const scriptPromise: Promise<string> =
           scriptOut.length < FIELD_SIZE_LIMIT
             ? Promise.resolve(scriptOut)
@@ -730,7 +745,7 @@ export default class App extends Vue {
                 .putString(scriptOut)
                 .then((t: UploadTaskSnapshot) => t.ref.getDownloadURL());
 
-        /* Task #3 */
+        /* Task #4 */
         const svgPromise: Promise<string> =
           svgPreviewData.length < FIELD_SIZE_LIMIT
             ? Promise.resolve(svgPreviewData)
@@ -740,13 +755,39 @@ export default class App extends Vue {
                 .then((t: UploadTaskSnapshot) => t.ref.getDownloadURL());
 
         /* Wrap the result from the three tasks as a new Promise */
-        return Promise.all([constructionDoc.id, scriptPromise, svgPromise]);
+        return Promise.all([constructionDoc.id, publicConstructionPromise, scriptPromise, svgPromise]);
       })
-      .then(([docId, scriptData, svgData]) => {
+      .then(([docId, publicConstruction, scriptData, svgData]) => {
         this.$appDB
           .collection(collectionPath)
           .doc(docId)
           .update({ script: scriptData, preview: svgData });
+
+
+
+        this.$appDB.doc(`users/${this.uid}`).get().then((queryDocSnapShot) => {
+          const folderToUpdate = this.publicConstruction ? "publicFolder" : "privateFolder"
+          const docData = queryDocSnapShot.data()
+          if (docData) {
+          const updatedFolder = docData[folderToUpdate] ? docData[folderToUpdate] : {"default": []}
+
+          updatedFolder["default"].push(docId)
+          if (folderToUpdate == "publicFolder") {
+              this.$appDB.doc(`users/${this.uid}`).update({publicFolder: updatedFolder}).then((sample) => {
+            console.log(sample);
+          })
+          }
+          else {
+              this.$appDB.doc(`users/${this.uid}`).update({privateFolder: updatedFolder}).then((sample) => {
+            console.log(sample);
+          })
+          }
+          }
+
+        })
+
+
+
         // Pass on the document ID to be included in the alert message
         return docId;
       })
