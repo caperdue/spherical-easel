@@ -1,18 +1,21 @@
 <template>
   <div>
-    <v-text-field
-      v-model="search"
-      label="Search construction"
+    <v-text-field v-model="search"
+      label="Search"
       clearable>
     </v-text-field>
     <v-treeview :items="items"
       :search="search"
-      :filter="filter"
-      :open.sync="open">
+      open-all>
       <template v-slot:label="{ item }">
         <v-hover v-slot:default="{ hover }">
-          <div>
-            <span>{{ item.description }}</span>
+          <div @mouseover.capture="onItemHover(item)">
+            <span>
+              {{ item.description }}
+              {{ item.objectCount }} objects,
+              {{ item.dateCreated.substring(0,10) }}
+              {{ item.author}}
+            </span>
             <v-overlay v-if="hover"
               absolute
               class="_test_constructionOverlay"
@@ -93,6 +96,7 @@ export default class extends Vue {
   originalSphereMatrix!: Matrix4;
   domParser!: DOMParser;
   lastDocId: string | null = null;
+  search: string | null = null;
 
   created(): void {
     this.domParser = new DOMParser();
