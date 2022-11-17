@@ -14,7 +14,7 @@
               {{ item.description }}
               {{ item.objectCount }} objects,
               {{ item.dateCreated.substring(0,10) }}
-              {{ item.author}}
+              {{ item.author }}
             </span>
             <v-overlay v-if="hover"
               absolute
