@@ -45,26 +45,11 @@
           </template>
           <span>{{ $t("main.ConstructionsTabToolTip") }}</span>
         </v-tooltip>
-        <v-tooltip bottom
-          :open-delay="toolTipOpenDelay"
-          :close-delay="toolTipCloseDelay">
-          <template v-slot:activator="{ on }">
-            <v-tab class="mt-3"
-              v-on="on">
-              <v-icon left>$vuetify.icons.value.constructionsTab</v-icon>
-            </v-tab>
-          </template>
-          <span>{{ $t("main.ConstructionsTabToolTip") }}</span>
-        </v-tooltip>
-
         <v-tab-item>
           <ToolGroups id="toolGroups"></ToolGroups>
         </v-tab-item>
         <v-tab-item>
           <ObjectTree id="objtree"></ObjectTree>
-        </v-tab-item>
-        <v-tab-item>
-          <ConstructionLoader id="loader"></ConstructionLoader>
         </v-tab-item>
         <v-tab-item>
           <ConstructionLoader id="loader"></ConstructionLoader>
@@ -80,8 +65,6 @@
       <v-icon>$vuetify.icons.value.toolsTab</v-icon>
       <v-spacer />
       <v-icon>$vuetify.icons.value.objectsTab</v-icon>
-      <v-spacer />
-      <v-icon>$vuetify.icons.value.constructionsTab</v-icon>
       <v-spacer />
       <v-icon>$vuetify.icons.value.constructionsTab</v-icon>
       <v-spacer />
