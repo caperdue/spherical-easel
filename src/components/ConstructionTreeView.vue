@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div @mouseenter="onListEnter"
+    @mouseleave="onListLeave">
     <v-text-field v-model="search"
       label="Search"
       clearable>
