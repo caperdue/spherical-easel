@@ -1,15 +1,63 @@
 <template>
-  <div>
-    <v-text-field
-      v-model="search"
-      label="Search construction"
+  <div @mouseenter="onListEnter"
+    @mouseleave="onListLeave">
+    <v-text-field v-model="search"
+      label="Search"
       clearable>
     </v-text-field>
-    <v-treeview
-      :items="items"
+    <v-treeview :items="items"
       :search="search"
-      :open.sync="open"
-      activatable>
+      open-all>
+      <template v-slot:label="{ item }">
+        <v-hover v-slot:default="{ hover }">
+          <div @mouseover.capture="onItemHover(item)">
+            <span>
+              {{ item.description }}
+              {{ item.objectCount }} objects,
+              {{ item.dateCreated.substring(0,10) }}
+              {{ item.author }}
+            </span>
+            <v-overlay v-if="hover"
+              absolute
+              class="_test_constructionOverlay"
+              opacity="0.3">
+              <v-row align="center">
+                <v-col>
+                  <v-btn rounded
+                    id="_test_loadfab"
+                    fab
+                    small
+                    color="secondary">
+                    <v-icon @click="loadPreview(item.id)">
+                      $downloadConstruction
+                    </v-icon>
+                  </v-btn>
+                </v-col>
+                <v-col v-if="allowSharing">
+                  <v-btn rounded
+                    id="_test_sharefab"
+                    fab
+                    small
+                    color="secondary"
+                    @click="$emit('share-requested', {docId: item.id})">
+                    <v-icon>$shareConstruction</v-icon>
+                  </v-btn>
+                </v-col>
+                <v-col v-if="item.author === userEmail">
+                  <v-btn rounded
+                    id="_test_deletefab"
+                    fab
+                    small
+                    color="red"
+                    @click="$emit('delete-requested', {docId: item.id})">
+                    <v-icon>$deleteConstruction</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-overlay>
+          </div>
+        </v-hover>
+      </template>
     </v-treeview>
   </div>
 </template>
@@ -26,10 +74,10 @@ import { useSEStore } from "@/stores/se";
 @Component({
   computed: {
     ...mapState(useSEStore, ["svgCanvas"]),
-    ...mapWritableState(useSEStore, ["inverseTotalRotationMatrix"]),
+    ...mapWritableState(useSEStore, ["inverseTotalRotationMatrix"])
   }
 })
-export default class  extends Vue {
+export default class extends Vue {
   @Prop() readonly items!: Array<SphericalConstruction>;
 
   @Prop({ type: Boolean })
@@ -49,6 +97,7 @@ export default class  extends Vue {
   originalSphereMatrix!: Matrix4;
   domParser!: DOMParser;
   lastDocId: string | null = null;
+  search: string | null = null;
 
   created(): void {
     this.domParser = new DOMParser();
@@ -136,9 +185,6 @@ export default class  extends Vue {
     this.$emit("load-requested", { docId });
   }
 }
-
-
-
 </script>
 
 <style>
