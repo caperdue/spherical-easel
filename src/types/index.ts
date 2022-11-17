@@ -285,7 +285,8 @@ export type IconNames =
   | "clearConstruction"
   | "undo"
   | "redo"
-  | "copyToClipboard";
+  | "copyToClipboard"
+  | "notifications";
 
 export interface AntipodalPointPair {
   newPoint: SEPoint;
@@ -558,6 +559,12 @@ export interface ConstructionInFirestore {
   preview?: string;
   // A list of enabled tool buttons associated with this construction
   tools: Array<ActionMode> | undefined;
+  importCount?: number;
+}
+
+export interface PublicConstructionInFirestore {
+  author: string;
+  constructionDocId: string;
 }
 /* UserProfile as stored in Firestore "users" collection */
 export interface UserProfile {
@@ -565,6 +572,8 @@ export interface UserProfile {
   displayName?: string;
   location?: string;
   role?: string;
+  publicFolder?: Map<string, Array<string>>
+  privateFolder?: Map<string, Array<string>>
 }
 
 export enum AngleMode {
